@@ -1,0 +1,90 @@
+import numpy as np #This is for being able to work with images as if they were arrays
+import cv2 #This will import image
+
+"""
+WRITE THE NAME OF THE FILES in ch1 and ch2 -  masks saved as avi 
+N ---- number of frames of the video 
+
+You will get: 
+    - M1 and M2 arrays of the manders coefficient for each time point 
+"""
+
+ch1 = ''
+ch2 = ''
+
+N = 40
+
+
+framesch1 = []
+framesch2 = []
+
+videoch1 = cv2.VideoCapture(ch1)
+
+while videoch1.isOpened():
+    # Read the current frame
+    ret, frame = videoch1.read()
+
+    # If the frame is read successfully, append it to the list
+    if ret:
+        framesch1.append(frame)
+
+    # Break the loop if all frames have been read
+    if len(framesch1) == N:
+        break
+    
+
+videoch1_array = np.array(framesch1)
+videoch1_array = videoch1_array[:,:,:,0]
+
+
+videoch2 = cv2.VideoCapture(ch2)
+
+while videoch2.isOpened():
+    # Read the current frame
+    ret, frame = videoch2.read()
+
+    # If the frame is read successfully, append it to the list
+    if ret:
+        framesch2.append(frame)
+
+    # Break the loop if all frames have been read
+    if len(framesch2) == N:
+        break
+    
+videoch2_array = np.array(framesch2)
+videoch2_array = videoch2_array[:,:,:,0]
+
+# shape of the videos
+shape = np.shape(videoch2_array)
+
+# open empty list to append one by one the manders coefficient
+Mch1inch2 = []
+Mch2inch1 = []
+
+
+
+for t in np.arange(shape[0]):
+    sumch1 = 0
+    sumch2 = 0
+    sumch1ch2 = 0
+    for i in np.arange(shape[1]): 
+        for j in np.arange(shape[2]): 
+            if videoch1_array[t,i,j]==0:
+                sumch1 = sumch1 + 1 
+                if videoch2_array[t,i,j]==0:
+                    sumch1ch2 = sumch1ch2 + 1 
+            if videoch2_array[t,i,j]==0:
+                sumch2 = sumch2 + 1 
+             
+    Mch1inch2_t = sumch1ch2/sumch1
+    Mch2inch1_t = sumch1ch2/sumch2
+
+    Mch1inch2.append(Mch1inch2_t)
+    Mch2inch1.append(Mch2inch1_t)
+    
+    
+m1 = np.array(Mch1inch2)
+m2  = np.array(Mch2inch1)
+
+
+
